@@ -1,0 +1,50 @@
+import React, { useState, useEffect } from 'react';
+import ActivityForm from './components/ActivityForm';
+import ActivityList from './components/ActivityList';
+
+const App = () => {
+  const [activities, setActivities] = useState([]);
+
+  // Load from local storage on initial load
+  useEffect(() => {
+    const storedActivities = JSON.parse(localStorage.getItem('activities'));
+    if (storedActivities) {
+      setActivities(storedActivities);
+    }
+  }, []);
+
+  // Save to local storage when activities change
+  useEffect(() => {
+    localStorage.setItem('activities', JSON.stringify(activities));
+  }, [activities]);
+
+  const addActivity = (activity) => {
+    setActivities([...activities, activity]);
+  };
+
+  const deleteActivity = (id) => {
+    setActivities(activities.filter((act) => act.id !== id));
+  };
+
+  const toggleComplete = (id) => {
+    setActivities(
+      activities.map((act) =>
+        act.id === id ? { ...act, completed: !act.completed } : act
+      )
+    );
+  };
+
+  return (
+    <div className="container">
+      <h1>📝 Daily Activity Manager</h1>
+      <ActivityForm addActivity={addActivity} />
+      <ActivityList
+        activities={activities}
+        deleteActivity={deleteActivity}
+        toggleComplete={toggleComplete}
+      />
+    </div>
+  );
+};
+
+export default App;
